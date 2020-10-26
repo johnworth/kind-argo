@@ -2,6 +2,8 @@
 
 This is just a playground to figure out how to get stuff working. No reason to keep it private, but also probably not useful to anyone else.
 
+These instructions are not intended for setting up Argo for production use.
+
 # Instructions
 
 `kind create cluster`
@@ -83,3 +85,34 @@ Check that the Argo workflow was triggered (though not necessarily run):
 ```bash
     kubectl -n argo-events get workflows | grep webhook
 ```
+
+## Installing Argo CD
+
+Adapted from the instructions at https://argoproj.github.io/argo-cd/getting_started/.
+
+```bash
+    kubectl create ns argocd
+    kubectl -n argocd apply -f argocd.yaml
+```
+
+Download and install the argocd cmd-line tool from the Argo CD releases page at https://github.com/argoproj/argo-cd/releases.
+
+Port-forward the argocd-server service in another terminal tab.
+
+```bash
+    kubectl -n argocd port-forward svc/argocd-server 8080:443
+```
+
+Get the default password for the API server.
+
+```bash
+    kubectl get pods -n argocd -l app.kubernetes.io/name=argocd-server -o name | cut -d'/' -f 2
+```
+
+Login using the CLI.
+
+```bash
+    argocd login localhost:8080
+```
+
+Follow the instructions at https://argoproj.github.io/argo-cd/getting_started/#6-create-an-application-from-a-git-repository to set up an application to deploy into the cluster.
